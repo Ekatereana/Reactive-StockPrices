@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.6.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'org.openapi.generator' version '5.3.1'
 }
 
 group = 'com.reactive.stock.finance'
@@ -10,11 +11,16 @@ sourceCompatibility = '11'
 
 repositories {
     mavenCentral()
+    maven { url "https://repo1.maven.org/maven2" }
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.springframework.security:spring-security-test'
@@ -23,3 +29,21 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+final spec = "$rootDir/docs/openapi/stocks-api.yml"
+final generatedSourcesDir = "$buildDir/generated/openapi"
+
+openApiGenerate {
+    validateSpec = false
+    generatorName = "spring"
+    inputSpec = spec
+    outputDir = generatedSourcesDir
+    apiPackage = "org.openapi.example.api"
+    invokerPackage = "org.openapi.example.invoker"
+    modelPackage = "org.openapi.example.model"
+
+    configOptions = [
+            dateLibrary: 'java8'
+    ]
+}
+
